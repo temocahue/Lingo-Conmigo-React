@@ -13,7 +13,7 @@ class LoginRegisterForm extends React.Component{
   			languageOfInterest: ''
 		}
 	}
-	LoginRegister = () => {
+	loginRegister = () => {
 		if (this.state.action === 'login'){
 			this.props.login({
 				username: this.state.username,
@@ -59,6 +59,7 @@ class LoginRegisterForm extends React.Component{
 			languageOfInterest: this.state.languageOfInterest
 		}
 		if (this.state.action === 'login'){
+			console.log("this.state.action is 'login'")
 			try{
 				const users = await fetch(process.env.REACT_APP_API + '/users/login', {
 					method: 'POST',
@@ -82,13 +83,14 @@ class LoginRegisterForm extends React.Component{
 				console.log('register');
 				const response = await fetch(process.env.REACT_APP_API + '/users/register', {
                     method: "POST",
-                    credential: 'include',
+                    credentials: 'include',
                     body: JSON.stringify(registerInfo),
                     headers: {
                         'Content-Type': 'application/json'
                     }
 
                 })
+
                 this.loginRegister()  
 			} catch (err) {
 				console.log('error', err)

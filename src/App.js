@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import LoginRegisterForm from './LoginRegisterForm'
+import UserContainer from './UserContainer'
 
 class App extends React.Component {
   constructor(){
@@ -23,7 +24,7 @@ class App extends React.Component {
       }
     })
     const parsedLoginResponse = await response.json()
-    if (parsedLoginResponse.status.code === 200){
+    if (parsedLoginResponse.success === true){
       this.setState({
         loggedIn: true,
         loggedInUser: parsedLoginResponse.data
@@ -58,9 +59,14 @@ class App extends React.Component {
     return(
       <div className="App">
       <h1>Lingo🗣Conmigo</h1>
-  
-      <LoginRegisterForm login={this.login} register={this.register}/>
-      
+      {
+        this.state.loggedIn
+        ?
+        <UserContainer loggedInUser={this.state.loggedInUser}/>
+        :
+        <LoginRegisterForm login={this.login} register={this.register}/>
+      }
+
 
       </div>
     );

@@ -162,7 +162,8 @@ class UserContainer extends Component {
 	}
 	render(){
 		return(
-
+			<div>
+			</div>
 		)
 	}
 }
