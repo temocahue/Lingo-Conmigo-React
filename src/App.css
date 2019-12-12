@@ -1,5 +1,12 @@
 .App {
   text-align: center;
+  background-color: orange;
+}
+.item{
+  background-color: red;
+}
+body{
+  background-color: orange;
 }
 
 .App-logo {

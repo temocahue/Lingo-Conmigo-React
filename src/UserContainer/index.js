@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import App from '../App'
-
+import UserList from '../UserList'
+import CreateMessage from '../CreateMessageForm'
+import MessageContainer from '../MessageContainer'
+import UserPage from '../UserPage'
 class UserContainer extends Component {
 	constructor(props){
 		super(props)
@@ -13,42 +16,64 @@ class UserContainer extends Component {
 				bio: []
 			},
 			messageUser: null,
-			currentuser: null
-
+			isEmptyState: true,
+			seeUserMessages: false
 		}
-
 	}
+
+	
 	componentDidMount(){
+		console.log("componentDidMount in UserContainer");
 		this.getUsers();
-		this.getMessages();
+		// this.getMessages();
 	}
 	
 	getUsers = async () => {
 		try {
-			const users = await fetch(process.env.REACT_APP_API_URL + '/api/v1/users/', {
-				credentials: 'include'
+			const users = await fetch(process.env.REACT_APP_API + '/users/findAmigos', {
+				credentials: 'include',
+				method: 'GET'
 			});
 			const parsedUsers = await users.json();
-			console.log(parsedUsers);
 			this.setState({
-				users: parsedUsers.data
+				users: parsedUsers
 			})
+			console.log(parsedUsers);
 		} catch(err){
 			console.log(err);
+
 
 
 		}
 
 	} 
+
+	showMessages = (id) => {
+		// put this id as message user in state
+		// getMessages()
+
+		// setState 
+
+	}
+
+	// this will work correctly once you have set userId of who you want to 
+	// message in state
 	getMessages = async () => {
+		console.log("getMessages getting called");
 		try {
-			const messages = await fetch(process.env.REACT_APP_API_URL + '/api/v1/messages/', {
+			const url = process.env.REACT_APP_API + '/messages/' + this.state.messageUser._id
+			console.log(url);
+			const messages = await fetch(url, {
+				method: 'GET',
 				credentials:'include'
 			});
+			console.log("here is messages response from getMessages");
 			const parsedMessages = await messages.json();
+			console.log("here are the messages we got");
 			console.log(parsedMessages);
+
 			this.setState({
-				messages: parsedMessages.data
+				messages: parsedMessages
 			})
 		}
 		catch (err) {
@@ -65,7 +90,7 @@ class UserContainer extends Component {
 		});
 		const deleteUserAccountParsed = await deleteUserAccountResponse.json();
 		console.log(deleteUserAccountParsed);
-		this.setState({users: this.state.users.filter((user) => user.id !== id)})
+		this.setState({users: this.state.users.filter((user) => user._id !== id)})
 	}
 	editUser = (idOfUserToEdit) => {
 		const userToEdit = this.state.users.find(user  => user.id === idOfUserToEdit)
@@ -89,7 +114,7 @@ class UserContainer extends Component {
 	updateUser = async (e) => {
 		e.preventDefault()
 		try{
-			const url = process.env.REACT_APP_API_URL + '/api/v1/users/' + this.state.userToEdit.id
+			const url = process.env.REACT_APP_API + '/users/findAmigos' + this.state.userToEdit._id
 			const updateResponse = await fetch(url, {
 				method: 'PUT',
 				credentials: 'include',
@@ -105,7 +130,7 @@ class UserContainer extends Component {
 
 
 			const newUserArrayWIthUpdate = this.state.users.map((user) => {
-				if(user.id === updateResponseParsed.data.id) {
+				if(user.id === updateResponseParsed.data._id) {
 					user = updateResponseParsed.data
 				}
 				return user
@@ -121,18 +146,18 @@ class UserContainer extends Component {
 			console.log(err);
 		}
 	}
-	deleteMessage = async (id) => {
+	deleteUser = async (id) => {
         console.log(id);
-        const deleteMessageResponse = await fetch(process.env.REACT_APP_API_URL + '/api/v1/messages/' + id, {
+        const deleteAmigoResponse = await fetch(process.env.REACT_APP_API + '/users/' + id, {
             method: 'DELETE',
             credentials: 'include'
         });
-        const deleteMessageParsed = await deleteMessageResponse.json();
-        console.log(deleteMessageParsed);
-        this.setState({messages: this.state.messages.filter((messages) => messages.id !== id)})
+        const deleteAmigoParsed = await deleteAmigoResponse.json();
+        console.log(deleteAmigoParsed);
+        this.setState({users: this.state.users.filter((users) => users._id !== id)})
     }
 	 openMessageModal = (userId) => {
-        const messageUser = this.state.users.filter(user => user.id === userId)
+        const messageUser = this.state.users.filter(user => user._id === userId)
 
         console.log('THIS IS openMessageModal:', messageUser);
         this.setState({
@@ -160,10 +185,39 @@ class UserContainer extends Component {
 			messageUser: null
 		})
 	}
-	render(){
+
+
+	render() {
+		console.log('these are your messages',this.state.messages);
 		return(
-			<div>
+
+			<div className="home">
+				<div>
+					<button type="submit" className="homebutton">Home</button><br></br>
+					<button type="submit" className="findamigobutton">Find<br></br>Amigos</button><br></br>
+					<button type="submit" className="messagesbutton">Learn</button><br></br>
+					<button type="submit" className="logoutbutton">Logout</button><br></br>
+				</div>
+				{ this.state.messageUser === null ? null :
+					<CreateMessage 
+						receiver={this.state.messageUser} 
+						messageModalOpen={this.state.messageModalOpen} 
+						closeMessageModal={this.closeMessageModal}
+					/> 
+				}
+				{ this.state.seeUserMessages 
+				// 	?
+				// 	// <SHOW NEW COMPONENT {this.state.seeUserMessages} {this.state.messages}>
+				// 	:
+				// 	null
+				}
+				{ this.state.messageUser !== null ? null :
+				<UserList  users={this.state.users} openMessageModal={this.openMessageModal} deleteUser={this.deleteUser}/>}}
+				<MessageContainer messages={this.state.messages} />
+				<UserPage userInfo={this.props.loggedInUser} open={this.state.editModalOpen}/>
 			</div>
+				
+
 		)
 	}
 }

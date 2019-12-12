@@ -11,3 +11,33 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+.home{
+	color: red;
+	display: inline-flex;
+}
+.homebutton{
+height: 40px;
+display: flex;
+background-color: red;
+margin: 10px
+}
+.findamigobutton{
+height: 40px;
+display: flex;
+background-color: red;
+margin: 10px
+}
+.messagesbutton{
+height: 40px;
+display: flex;
+background-color: red;
+margin: 10px
+}
+.logoutbutton{
+height: 40px;
+display: flex;
+background-color: red;
+margin: 10px
+}
+
+

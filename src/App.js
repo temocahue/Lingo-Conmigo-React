@@ -12,53 +12,54 @@ class App extends React.Component {
       loggedInUser: null
     }
   }
-  login = async (loginInfo) => {
-    console.log('THIS IS THE APP.JS in the login')
-    // console.log(process.env.REACT_APP_API_URL);
-    const response = await fetch(process.env.REACT_APP_API + '/users/login', {
+ register = async (registerInfo) => {
+    const response = await fetch(process.env.REACT_APP_API + '/users/register', {
       method: "POST",
-      credential: 'include',
-      body: JSON.stringify(loginInfo),
+      credentials: 'include',
+      body: JSON.stringify(registerInfo),
       headers: {
         'Content-Type': 'application/json'
       }
     })
+    console.log(registerInfo);
     const parsedLoginResponse = await response.json()
     if (parsedLoginResponse.success === true){
       this.setState({
         loggedIn: true,
-        loggedInUser: parsedLoginResponse.data
+        loggedInUser: registerInfo
       })
     } else {
       console.log("Login Failed");
       console.log(parsedLoginResponse);
     }
   }
-  register = async (registerInfo) => {
-    console.log('this is the app.js in the register')
-    const response = await fetch(process.env.REACT_APP_API + '/users/register', {
+ 
+  login = async (loginInfo) => {
+    const response = await fetch(process.env.REACT_APP_API + '/users/login', {
       method: "POST",
-      credential: 'include',
-      body: JSON.stringify(registerInfo),
+      credentials: 'include',
+      body: JSON.stringify(loginInfo),
       headers: {
         'Content-Type': 'application/json'
       }
     })
+    console.log(loginInfo);
     const parsedLoginResponse = await response.json()
-    if (parsedLoginResponse.status.code === 201){
+    if (parsedLoginResponse.success === true){
       this.setState({
         loggedIn: true,
-        loggedInUser: parsedLoginResponse.data
+        loggedInUser: loginInfo
       })
     } else {
-      console.log("Register Failed");
+      console.log("Login Failed");
       console.log(parsedLoginResponse);
     }
   }
+ 
   render(){
     return(
       <div className="App">
-      <h1>Lingo🗣Conmigo</h1>
+      <h1>🇬🇧Lingo🗣Conmigo🇪🇸</h1>
       {
         this.state.loggedIn
         ?

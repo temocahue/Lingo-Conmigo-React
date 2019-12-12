@@ -10,16 +10,18 @@ class LoginRegisterForm extends React.Component{
   			password: '',
   			bio: '',
   			nativeLanguage: '',
-  			languageOfInterest: ''
+  			languageOfInterest: '',
+  			// action: 'login'
 		}
 	}
 	loginRegister = () => {
 		if (this.state.action === 'login'){
 			this.props.login({
 				username: this.state.username,
-				password: this.state.password
+				password: this.state.password,
+				bio: this.state.bio
 			})
-		}else {
+		} else {
 			this.setState({
 				action: 'login'
 			})
@@ -29,12 +31,12 @@ class LoginRegisterForm extends React.Component{
 		if (this.state.action === 'login') {
 			console.log('switching to register form')
 			this.setState({
-			action: 'register'
+				action: 'register'
 			})
 		} else {
 			console.log('switching to login form');
 			this.setState({
-				action: 'login'
+				action: 'register'
 			})
 		}
 	}
@@ -45,11 +47,11 @@ class LoginRegisterForm extends React.Component{
 	}
 	handleSubmit = async (e) => {
 		e.preventDefault()
-		console.log('lets log in');
 
 		const userLogin = {
 			username: this.state.username,
-			password: this.state.password
+			password: this.state.password,
+			bio: this.state.bio
 		}
 		const registerInfo = {
 			username: this.state.username,
@@ -59,8 +61,8 @@ class LoginRegisterForm extends React.Component{
 			languageOfInterest: this.state.languageOfInterest
 		}
 		if (this.state.action === 'login'){
-			console.log("this.state.action is 'login'")
 			try{
+				console.log("trying to log in");
 				const users = await fetch(process.env.REACT_APP_API + '/users/login', {
 					method: 'POST',
                     credentials: 'include',
@@ -70,7 +72,6 @@ class LoginRegisterForm extends React.Component{
                     }
 				})
 				const parseUser = await users.json();
-                console.log(parseUser);
                 this.setState({
                 	users: parseUser.data
                 })
@@ -80,7 +81,6 @@ class LoginRegisterForm extends React.Component{
 			}
 		}else {
 			try{
-				console.log('register');
 				const response = await fetch(process.env.REACT_APP_API + '/users/register', {
                     method: "POST",
                     credentials: 'include',
@@ -97,7 +97,7 @@ class LoginRegisterForm extends React.Component{
 
 			}
                 
-        }          
+        }
 			
 	}
 	render(){
@@ -121,19 +121,19 @@ class LoginRegisterForm extends React.Component{
 						<Form.Field>
 						<Label>Bio:</Label>
 				<Form.Input
-				type="text"
-				name="bio"
-				value={this.state.bio}
-				onChange={this.handleChange}
+					type="text"
+					name="bio"
+					value={this.state.bio}
+					onChange={this.handleChange}
 				/>
 				</Form.Field>
 				<Form.Field>
 				<Label>languageOfInterest:</Label>
 				<Form.Input
-				type="text"
-				name="languageOfInterest"
-				value={this.state.languageOfInterest}
-				onChange={this.handleChange}
+					type="text"
+					name="languageOfInterest"
+					value={this.state.languageOfInterest}
+					onChange={this.handleChange}
 				/>
 				</Form.Field>
 					</React.Fragment>
@@ -141,22 +141,22 @@ class LoginRegisterForm extends React.Component{
 					null
 				}
 				<Form.Field>
-				<Label>username:</Label>
-				<Form.Input
-				type="username"
-				name="username"
-				value={this.state.username}
-				onChange={this.handleChange}
-				/>
-				</Form.Field>
+					<Label>username:</Label>
+					<Form.Input
+						type="username"
+						name="username"
+						value={this.state.username}
+						onChange={this.handleChange}
+					/>
+					</Form.Field>
 				<Form.Field>
-				<Label>Password:</Label>
-				<Form.Input
-				type="password"
-				name="password"
-				value={this.state.password}
-				onChange={this.handleChange}
-				/>
+					<Label>Password:</Label>
+					<Form.Input
+						type="password"
+						name="password"
+						value={this.state.password}
+						onChange={this.handleChange}
+					/>
 				</Form.Field>
 				<Button type="submit">{this.state.action === "register" ? "Register" : 'Login in'}</Button>
 				</Form>
