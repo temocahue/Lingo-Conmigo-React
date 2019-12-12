@@ -4,12 +4,14 @@ import UserList from '../UserList'
 import CreateMessage from '../CreateMessageForm'
 import MessageContainer from '../MessageContainer'
 import UserPage from '../UserPage'
+import BioForm from '../BioForm'
 class UserContainer extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
 			users: [],
 			messages: [],
+			userInfo: [],
 			editModalOpen: false,
 			messageModalOpen: false,
 			userToEdit:{
@@ -25,6 +27,8 @@ class UserContainer extends Component {
 	componentDidMount(){
 		console.log("componentDidMount in UserContainer");
 		this.getUsers();
+		this.getUserInfo();
+		this.editUser();
 		// this.getMessages();
 	}
 	
@@ -41,13 +45,27 @@ class UserContainer extends Component {
 			console.log(parsedUsers);
 		} catch(err){
 			console.log(err);
-
-
-
 		}
 
-	} 
+	}
 
+	getUserInfo = async () => {
+		try {
+			const user = await fetch(process.env.REACT_APP_API + '/users/profile', {
+				credentials: 'include',
+				method: 'GET'
+			});
+			
+			const parsedUserInfo = await user.json();
+			this.setState({
+				userInfo: parsedUserInfo
+			})
+			console.log(parsedUserInfo);
+		} catch(err){
+			console.log(err);
+		}
+
+	}
 	showMessages = (id) => {
 		// put this id as message user in state
 		// getMessages()
@@ -84,7 +102,7 @@ class UserContainer extends Component {
 	}
 	//need to change this to delete individual account
 	deleteUser = async (id) => {
-		const deleteUserAccountResponse = await fetch(process.env.REACT_APP_API_URL + '/api/v1/users/', {
+		const deleteUserAccountResponse = await fetch(process.env.REACT_APP_APIå + '/users/' + id, {
 			method: 'DELETE',
 			credentials: 'include'
 		});
@@ -93,7 +111,7 @@ class UserContainer extends Component {
 		this.setState({users: this.state.users.filter((user) => user._id !== id)})
 	}
 	editUser = (idOfUserToEdit) => {
-		const userToEdit = this.state.users.find(user  => user.id === idOfUserToEdit)
+		const userToEdit = this.state.users.find(user  => user._id === idOfUserToEdit)
 		this.setState({
 			editModalOpen: true,
 			userToEdit: {
@@ -140,7 +158,7 @@ class UserContainer extends Component {
 				users: newUserArrayWIthUpdate,
 				
 			})
-			this.closeModal()
+			
 
 		} catch(err) {
 			console.log(err);
@@ -167,13 +185,15 @@ class UserContainer extends Component {
         })
     }
      openEditModal = (userId) => {
-     	const userEdit = this.props.loggedInUser
+     	const userEdit = this.state.userInfo
      	console.log(userEdit);
         this.setState({
             editModalOpen: true
 
         })
+
     }
+
 	closeEditModal = () =>  {
 		this.setState({
 			editModalOpen: false
@@ -189,6 +209,7 @@ class UserContainer extends Component {
 
 	render() {
 		console.log('these are your messages',this.state.messages);
+		console.log('this is userInfo', this.state.userInfo);
 		return(
 
 			<div className="home">
@@ -203,18 +224,17 @@ class UserContainer extends Component {
 						receiver={this.state.messageUser} 
 						messageModalOpen={this.state.messageModalOpen} 
 						closeMessageModal={this.closeMessageModal}
-					/> 
+					/>
+					
 				}
-				{ this.state.seeUserMessages 
-				// 	?
-				// 	// <SHOW NEW COMPONENT {this.state.seeUserMessages} {this.state.messages}>
-				// 	:
-				// 	null
+				{ this.state.userInfo !== null ? null :
+				<BioForm userInfo={this.state.userInfo} openEditModal={this.openEditModal} closeEditModal={this.closeEditModal} />
 				}
 				{ this.state.messageUser !== null ? null :
 				<UserList  users={this.state.users} openMessageModal={this.openMessageModal} deleteUser={this.deleteUser}/>}}
 				<MessageContainer messages={this.state.messages} />
-				<UserPage userInfo={this.props.loggedInUser} open={this.state.editModalOpen}/>
+				<UserPage userInfo={this.state.userInfo} openEditModal={this.openEditModal} closeEditModal={this.closeEditModal}/>
+	
 			</div>
 				
 
